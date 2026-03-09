@@ -12,7 +12,7 @@ app.use(
   }),
 );
 
-const serviceAccount = require("./firebase-key.json");
+// const serviceAccount = require("./firebase-key.json");
 
 admin.initializeApp({
   credential: admin.credential.cert({
