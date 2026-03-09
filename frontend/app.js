@@ -2,7 +2,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebas
 import {
   getMessaging,
   getToken,
-  onMessage,
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js";
 
 const firebaseConfig = {
@@ -19,50 +18,43 @@ const messaging = getMessaging(app);
 let deviceToken = null;
 
 async function init() {
-  const registration = await navigator.serviceWorker.register(
-    "./firebase-messaging-sw.js",
-  );
+  try {
+    const registration = await navigator.serviceWorker.register(
+      "/firebase-messaging-sw.js",
+    );
 
-  const permission = await Notification.requestPermission();
+    const permission = await Notification.requestPermission();
 
-  if (permission === "granted") {
-    deviceToken = await getToken(messaging, {
-      vapidKey:
-        "BCQH6_LDKTqthp-JTKe_OxH2PZRj1GG4I027I4GyJ8sfp554qISUeAzoF8UEwXDPrWSWo5fF7ybjCaDCjJe6HqM",
-      serviceWorkerRegistration: registration,
-    });
+    if (permission === "granted") {
+      deviceToken = await getToken(messaging, {
+        vapidKey:
+          "BCQH6_LDKTqthp-JTKe_OxH2PZRj1GG4I027I4GyJ8sfp554qISUeAzoF8UEwXDPrWSWo5fF7ybjCaDCjJe6HqM",
+        serviceWorkerRegistration: registration,
+      });
 
-    console.log("DEVICE TOKEN:", deviceToken);
+      console.log("Device Token:", deviceToken);
+    }
+  } catch (err) {
+    console.error("Init error:", err);
   }
 }
 
 init();
 
-onMessage(messaging, (payload) => {
-  console.log("Message received in foreground:", payload);
-
-  new Notification(payload.notification.title, {
-    body: payload.notification.body,
-  });
-
-  const audio = new Audio("./ringtone.mp3");
-
-  audio.loop = true;
-  audio.play();
-});
-
 async function ring() {
-  await fetch("https://ring-phone.onrender.com", {
-    method: "POST",
-
-    headers: {
-      "Content-Type": "application/json",
-    },
-
-    body: JSON.stringify({
-      token: deviceToken,
-    }),
-  });
+  try {
+    await fetch("https://ring-phone.onrender.com/ring", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        token: deviceToken,
+      }),
+    });
+  } catch (err) {
+    console.error("Ring error:", err);
+  }
 }
 
 window.ring = ring;

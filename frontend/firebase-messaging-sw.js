@@ -1,28 +1,45 @@
-importScripts(
-  "https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js",
-);
-importScripts(
-  "https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js",
-);
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+import {
+  getMessaging,
+  getToken,
+} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js";
 
-firebase.initializeApp({
+const firebaseConfig = {
   apiKey: "AIzaSyCP7pi5Jv7nIScyHYSkvUD15K_SiTEEoMU",
   authDomain: "push-ringtone.firebaseapp.com",
   projectId: "push-ringtone",
   messagingSenderId: "512791099015",
   appId: "1:512791099015:web:705897b77d7b4033f82a22",
-});
+};
 
-const messaging = firebase.messaging();
+const app = initializeApp(firebaseConfig);
+const messaging = getMessaging(app);
 
-messaging.onBackgroundMessage(function (payload) {
-  console.log("Push received:", payload);
+let deviceToken = null;
 
-  self.registration.showNotification(payload.notification.title, {
-    body: payload.notification.body,
-    icon: "ringtone.png",
+async function initFirebase() {
+  try {
+    // Register service worker
+    const registration = await navigator.serviceWorker.register(
+      "/firebase-messaging-sw.js",
+    );
 
-    vibrate: [200, 100, 200], // works on many phones
-    requireInteraction: true, // keeps notification visible
-  });
-});
+    const permission = await Notification.requestPermission();
+
+    if (permission === "granted") {
+      deviceToken = await getToken(messaging, {
+        vapidKey:
+          "BCQH6_LDKTqthp-JTKe_OxH2PZRj1GG4I027I4GyJ8sfp554qISUeAzoF8UEwXDPrWSWo5fF7ybjCaDCjJe6HqM",
+        serviceWorkerRegistration: registration,
+      });
+
+      console.log("Device Token:", deviceToken);
+    }
+  } catch (err) {
+    console.error("Firebase init error:", err);
+  }
+}
+
+initFirebase();
+
+export { deviceToken };
