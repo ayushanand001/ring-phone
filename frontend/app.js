@@ -52,7 +52,7 @@ onMessage(messaging, (payload) => {
 });
 
 async function ring() {
-  await fetch("http://localhost:3000/ring", {
+  await fetch("https://ring-phone.onrender.com", {
     method: "POST",
 
     headers: {
