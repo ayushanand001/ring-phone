@@ -28,6 +28,11 @@ messaging.onBackgroundMessage((payload) => {
       500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170,
       40,
     ], // SOS pattern
+    requireInteraction: true, // This keeps the notification visible until swiped/clicked
+    actions: [
+      { action: "open", title: "Answer" },
+      { action: "close", title: "Ignore" },
+    ],
     data: { url: self.location.origin }, // Save the URL to open on click
   };
 

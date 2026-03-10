@@ -1,0 +1,22 @@
+{
+  "short_name": "RingApp",
+  "name": "Ring My Friend",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#ff4757",
+  "description": "Ring a friend's phone instantly via web push."
+}
