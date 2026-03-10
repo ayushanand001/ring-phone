@@ -29,10 +29,25 @@ app.post("/ring", async (req, res) => {
 
   const message = {
     token: token,
+    notification: {
+      title: "Incoming Ring!",
+      body: "Tap to answer",
+    },
     data: {
       type: "ring",
-      title: "Incoming Ring",
-      body: "Someone is ringing your phone",
+    },
+    android: {
+      priority: "high",
+      notification: {
+        channel_id: "ring_channel", // You can set custom sounds in Android settings for this ID
+        sound: "default",
+        priority: "high",
+      },
+    },
+    webpush: {
+      headers: {
+        Urgency: "high",
+      },
     },
   };
 
