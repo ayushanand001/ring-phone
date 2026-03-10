@@ -25,9 +25,7 @@ admin.initializeApp({
 app.post("/ring", async (req, res) => {
   console.log("Request received:", req.body);
 
-  // const { token } = req.body;
-  const token =
-    "dkq_vj8MG392QsRRx2yz9e:APA91bElTHfhvDD0SgbgJWUBfePRreCQ0PY5pbTqTkCkhiJbAXZrSQDlr7AqTl_ta3BhM-7dLgVg2UZrT2RqaJB3DDNzOB0WefIVUG0qD0C4LjBYS7AVb5k";
+  const { token } = req.body;
 
   const message = {
     token: token,
