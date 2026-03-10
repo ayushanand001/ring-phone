@@ -1,20 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
-<title>Ring Phone</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ring My Friend</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px; }
+        input, button { padding: 10px; margin: 10px; width: 80%; max-width: 300px; }
+        #status { color: green; font-size: 0.9em; }
+    </style>
 </head>
-
 <body>
+    <h2>Ring My Friend</h2>
+    
+    <input type="text" id="username" placeholder="Enter Your Name (e.g. Rahul)">
+    <button onclick="registerMe()">Enable My Phone to Ring</button>
+    <p id="status"></p>
 
-<h2>Ring Friend</h2>
+    <hr>
 
-<button onclick="ring()">Ring</button>
+    <h3>Who do you want to ring?</h3>
+    <input type="text" id="targetUser" placeholder="Friend's Name (e.g. Priya)">
+    <button onclick="ringFriend()" style="background: #ff4757; color: white; border: none;">RING THEM!</button>
 
-<script type="module" src="app.js"></script>
-
+    <script type="module" src="app.js"></script>
 </body>
 </html>
