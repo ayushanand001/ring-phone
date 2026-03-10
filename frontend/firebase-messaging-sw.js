@@ -1,8 +1,9 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-import {
-  getMessaging,
-  getToken,
-} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js";
+importScripts(
+  "https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js",
+);
+importScripts(
+  "https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js",
+);
 
 const firebaseConfig = {
   apiKey: "AIzaSyCP7pi5Jv7nIScyHYSkvUD15K_SiTEEoMU",
@@ -12,34 +13,22 @@ const firebaseConfig = {
   appId: "1:512791099015:web:705897b77d7b4033f82a22",
 };
 
-const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
+firebase.initializeApp(firebaseConfig);
+const messaging = firebase.messaging();
 
-let deviceToken = null;
+// This handles the background notification
+messaging.onBackgroundMessage((payload) => {
+  console.log(
+    "[firebase-messaging-sw.js] Background message received ",
+    payload,
+  );
 
-async function initFirebase() {
-  try {
-    // Register service worker
-    const registration = await navigator.serviceWorker.register(
-      "/firebase-messaging-sw.js",
-    );
+  const notificationTitle = payload.data.title || "Incoming Ring";
+  const notificationOptions = {
+    body: payload.data.body || "Someone is ringing!",
+    icon: "/icon.png", // Add an icon path if you have one
+    data: payload.data, // Pass the data so we can access it
+  };
 
-    const permission = await Notification.requestPermission();
-
-    if (permission === "granted") {
-      deviceToken = await getToken(messaging, {
-        vapidKey:
-          "BCQH6_LDKTqthp-JTKe_OxH2PZRj1GG4I027I4GyJ8sfp554qISUeAzoF8UEwXDPrWSWo5fF7ybjCaDCjJe6HqM",
-        serviceWorkerRegistration: registration,
-      });
-
-      console.log("Device Token:", deviceToken);
-    }
-  } catch (err) {
-    console.error("Firebase init error:", err);
-  }
-}
-
-initFirebase();
-
-export { deviceToken };
+  self.registration.showNotification(notificationTitle, notificationOptions);
+});

@@ -15,75 +15,49 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
-
 let deviceToken = null;
 
 async function init() {
   try {
-    // Register service worker
     const registration = await navigator.serviceWorker.register(
       "/firebase-messaging-sw.js",
     );
-
-    // Ask notification permission
     const permission = await Notification.requestPermission();
 
-    if (permission !== "granted") {
-      console.log("Notification permission denied");
-      return;
-    }
-
-    // Get FCM token
-    deviceToken = await getToken(messaging, {
-      vapidKey:
-        "BCQH6_LDKTqthp-JTKe_OxH2PZRj1GG4I027I4GyJ8sfp554qISUeAzoF8UEwXDPrWSWo5fF7ybjCaDCjJe6HqM",
-      serviceWorkerRegistration: registration,
-    });
-
-    console.log("Device Token:", deviceToken);
-
-    if (!deviceToken) {
-      console.log("No registration token available.");
+    if (permission === "granted") {
+      deviceToken = await getToken(messaging, {
+        vapidKey:
+          "BCQH6_LDKTqthp-JTKe_OxH2PZRj1GG4I027I4GyJ8sfp554qISUeAzoF8UEwXDPrWSWo5fF7ybjCaDCjJe6HqM",
+        serviceWorkerRegistration: registration,
+      });
+      console.log("Token:", deviceToken);
     }
   } catch (err) {
     console.error("Init error:", err);
   }
 }
 
-init();
-
-// Listen for foreground messages
+// Foreground Listener
 onMessage(messaging, (payload) => {
-  console.log("Message received:", payload);
-
-  if (payload.data && payload.data.type === "ring") {
+  console.log("Foreground message:", payload);
+  if (payload.data?.type === "ring") {
     const audio = new Audio("/ringtone.mp3");
-    audio.play();
+    audio
+      .play()
+      .catch((e) =>
+        console.log("Audio play failed (user interaction needed):", e),
+      );
   }
 });
 
-// Ring button function
-async function ring() {
-  if (!deviceToken) {
-    alert("Device token not ready yet. Refresh the page.");
-    return;
-  }
+window.ring = async () => {
+  if (!deviceToken) return alert("Token not ready");
 
-  try {
-    const response = await fetch("https://ring-phone.onrender.com/ring", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token: deviceToken }),
-    });
+  await fetch("https://ring-phone.onrender.com/ring", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token: deviceToken }),
+  });
+};
 
-    const data = await response.text();
-    console.log("Server response:", data);
-  } catch (err) {
-    console.error("Ring error:", err);
-  }
-}
-
-// expose to HTML
-window.ring = ring;
+init();
