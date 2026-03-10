@@ -29,7 +29,8 @@ app.post("/ring", async (req, res) => {
 
   const message = {
     token: token,
-    notification: {
+    data: {
+      type: "ring",
       title: "Incoming Ring",
       body: "Someone is ringing your phone",
     },
@@ -43,6 +44,7 @@ app.post("/ring", async (req, res) => {
     res.send("Notification sent");
   } catch (error) {
     console.log("Firebase error:", error);
+    res.status(500).send(error);
   }
 });
 
